@@ -2,12 +2,14 @@
 
 {% block content %}
 
-    <h1>Welcome to my Polls App - a simple webapp written in Django.</h1>
+    <h3>Welcome to my Polls App - a simple webapp written in Django.</h3>
 
-    {% if question_list %}
+    {% if latest_question_list %}
         <ul>
-            {% for question in question_list %}
-                <li><a href="{{ question.get_absolute_url }}">{{ question.question_text }}</a></li>
+            {% for question in latest_question_list %}
+                <li>
+                    <a href="{{ question.get_absolute_url }}">{{ question.question_text }}</a>
+                </li>
             {% endfor %}
         </ul>
     {% else %}
