@@ -2,8 +2,6 @@
 
 {% block content %}
 
-    <h3>Welcome to my Polls App - a simple webapp written in Django.</h3>
-
     {% if latest_question_list %}
         <ul>
             {% for question in latest_question_list %}
