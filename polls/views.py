@@ -14,6 +14,13 @@ class IndexView(generic.ListView):
     template_name = "index.html"
     context_object_name = "latest_question_list"
 
+    def get_context_data(self, **kwargs: Any):
+        context = super().get_context_data(**kwargs)
+        num_visits = self.request.session.get("num_visits", 0)
+        self.request.session["num_visits"] = 1 + num_visits
+        context["num_visits"] = num_visits
+        return context
+
     def get_queryset(self):
         return Question.objects.filter(pub_date__lte=timezone.now()).order_by(
             "-pub_date"
