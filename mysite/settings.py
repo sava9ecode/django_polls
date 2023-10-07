@@ -14,6 +14,11 @@ import os
 
 from pathlib import Path
 
+from dotenv import load_dotenv
+
+
+load_dotenv()
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -22,13 +27,15 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-8v1x22td3f$d1+j#98l%#74+rcd*#69!04b37qi*nx2vgpc_o%"
+SECRET_KEY = os.getenv(
+    "SECRET_KEY",
+    default="django-insecure-8v1x22td3f$d1+j#98l%#74+rcd*#69!04b37qi*nx2vgpc_o%",
+)
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv("DEBUG", default=True)
 
-ALLOWED_HOSTS = ["*"]
-
+ALLOWED_HOSTS = list(os.getenv("ALLOWED_HOSTS", default="*"))
 
 # Application definition
 
@@ -40,8 +47,12 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "polls.apps.PollsConfig",
+    "crispy_bootstrap4",
+    "crispy_forms",
     "debug_toolbar",
 ]
+
+CRISPY_TEMPLATE_PACK = "bootstrap4"
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -131,3 +142,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+LOGIN_REDIRECT_URL = "/"
+
+EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"

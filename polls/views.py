@@ -1,12 +1,15 @@
 from typing import Any
-from django.db import models
 from django.urls import reverse
 from django.views import generic
 from django.utils import timezone
 from django.http import HttpResponseRedirect
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import get_object_or_404, render, redirect
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth import login
 
 from .models import Question, Choice
+from .forms import NewUserForm
 
 
 class IndexView(generic.ListView):
@@ -35,7 +38,7 @@ class DetailView(generic.DetailView):
         return Question.objects.filter(pub_date__lte=timezone.now())
 
 
-class ResultsView(generic.DetailView):
+class ResultsView(LoginRequiredMixin, generic.DetailView):
     model = Question
     template_name = "polls/results.html"
 
@@ -43,6 +46,7 @@ class ResultsView(generic.DetailView):
         return Question.objects.filter(pub_date__lte=timezone.now())
 
 
+@login_required
 def votes(request, question_id):
     question = get_object_or_404(Question, pk=question_id)
 
@@ -61,3 +65,20 @@ def votes(request, question_id):
         selected_choice.votes += 1
         selected_choice.save()
         return HttpResponseRedirect(reverse("polls:results", args=(question_id,)))
+
+
+def register_request(request):
+    form = NewUserForm()
+    if request.method == "POST":
+        form = NewUserForm(request.POST)
+
+        if form.is_valid():
+            user = form.save()
+            login(request, user)
+            return redirect("polls:index")
+
+    return render(
+        request=request,
+        template_name="registration/register.html",
+        context={"register_form": form},
+    )
